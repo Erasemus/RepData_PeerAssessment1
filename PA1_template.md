@@ -60,20 +60,13 @@
 ##Calculate and report the mean and median total number of steps taken per day
   meanStepsPerDay<-mean(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
   medianStepsPerDay<-median(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
- cat("The mean total steps per day is",meanStepsPerDay, "and the median total steps per day is",medianStepsPerDay)
+  cat("The mean total steps per day is",meanStepsPerDay, "and the median total steps per day is",medianStepsPerDay)
 ```
 
 ```
 ## The mean total steps per day is 9354 and the median total steps per day is 10395
 ```
-
-```r
- cat ("The mean and median steps per day appear below")
-```
-
-```
-## The mean and median steps per day appear below
-```
+###Time series plot of steps per interval
 
 ```r
 ##
@@ -136,13 +129,12 @@ fixedActs<-acts
         fixedActs[i,1]<-meanIntervals[as.character(fixedActs[i,3]),2]
       }
     }
-  #summary(acts)
 fstepsPerDay<-ddply(fixedActs,"date",summarize,sumSteps=sum(steps))
 ```
 
 ```r
-#Plot the filled  histogram
- ggplot(fstepsPerDay, aes(  x=sumSteps)) + geom_histogram()
+## Plot the filled  histogram
+  ggplot(fstepsPerDay, aes(  x=sumSteps)) + geom_histogram()
 ```
 
 ```
@@ -152,10 +144,10 @@ fstepsPerDay<-ddply(fixedActs,"date",summarize,sumSteps=sum(steps))
 ![plot of chunk histogram with mean-filled values](figure/histogram with mean-filled values.png) 
 
 ```r
-fstepMean<-mean(fstepsPerDay$sumSteps)
-fstepMedian<-median(fstepsPerDay$sumSteps)
-meanDiff<-stepMean-fstepMean
-cat("The mean steps per day changed by",meanDiff, "steps")
+  fstepMean<-mean(fstepsPerDay$sumSteps)
+  fstepMedian<-median(fstepsPerDay$sumSteps)
+  meanDiff<-stepMean-fstepMean
+  cat("The mean steps per day changed by",meanDiff, "steps")
 ```
 
 ```
@@ -163,8 +155,8 @@ cat("The mean steps per day changed by",meanDiff, "steps")
 ```
 
 ```r
-medianDiff<-fstepMedian-medianStepsPerDay
-cat("The median steps per day changed by",medianDiff, "steps")
+  medianDiff<-fstepMedian-medianStepsPerDay
+  cat("The median steps per day changed by",medianDiff, "steps")
 ```
 
 ```
@@ -176,13 +168,13 @@ cat("The median steps per day changed by",medianDiff, "steps")
 Create a factor for weekday versus weekend
 
 ```r
-fixedActs$dayType="weekday"
-days<-weekdays(strptime(fixedActs$date,format="%Y-%m-%d"))
-sats<-days=="Saturday"
-suns<-days=="Sunday"
-fixedActs$dayType[suns]<-"weekend"
-fixedActs$dayType[sats]<-"weekend"
-table(fixedActs$dayType)
+  fixedActs$dayType="weekday"
+  days<-weekdays(strptime(fixedActs$date,format="%Y-%m-%d"))
+  sats<-days=="Saturday"
+  suns<-days=="Sunday"
+  fixedActs$dayType[suns]<-"weekend"
+  fixedActs$dayType[sats]<-"weekend"
+  table(fixedActs$dayType)
 ```
 
 ```
@@ -193,9 +185,9 @@ table(fixedActs$dayType)
 Summarize the data and plot it
 
 ```r
-wf<-ddply(fixedActs,.(interval,dayType),summarize,meanSteps=mean(steps))
-d<-ggplot(wf,aes(x=interval,y=meanSteps),geom="line",facets=dayType)+facet_grid(dayType ~.)
-d+geom_line()
+  wf<-ddply(fixedActs,.(interval,dayType),summarize,meanSteps=mean(steps))
+  d<-ggplot(wf,aes(x=interval,y=meanSteps),geom="line",facets=dayType)+facet_grid(dayType ~.)
+  d+geom_line()
 ```
 
 ![plot of chunk Weekday vs Weekend Activity Patterns](figure/Weekday vs Weekend Activity Patterns.png) 

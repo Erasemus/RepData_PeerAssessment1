@@ -32,9 +32,9 @@
 ##Calculate and report the mean and median total number of steps taken per day
   meanStepsPerDay<-mean(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
   medianStepsPerDay<-median(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
- cat("The mean total steps per day is",meanStepsPerDay, "and the median total steps per day is",medianStepsPerDay)
- cat ("The mean and median steps per day appear below")
+  cat("The mean total steps per day is",meanStepsPerDay, "and the median total steps per day is",medianStepsPerDay)
 ```
+###Time series plot of steps per interval
 ```{r time series plot ignoring missing values}
 ##
 ##Get the complete cases for the summary with ddply and the plot
@@ -83,35 +83,34 @@ fixedActs<-acts
         fixedActs[i,1]<-meanIntervals[as.character(fixedActs[i,3]),2]
       }
     }
-  #summary(acts)
 fstepsPerDay<-ddply(fixedActs,"date",summarize,sumSteps=sum(steps))
 ```
 ```{r histogram with mean-filled values}
-#Plot the filled  histogram
- ggplot(fstepsPerDay, aes(  x=sumSteps)) + geom_histogram()
-fstepMean<-mean(fstepsPerDay$sumSteps)
-fstepMedian<-median(fstepsPerDay$sumSteps)
-meanDiff<-stepMean-fstepMean
-cat("The mean steps per day changed by",meanDiff, "steps")
-medianDiff<-fstepMedian-medianStepsPerDay
-cat("The median steps per day changed by",medianDiff, "steps")
+## Plot the filled  histogram
+  ggplot(fstepsPerDay, aes(  x=sumSteps)) + geom_histogram()
+  fstepMean<-mean(fstepsPerDay$sumSteps)
+  fstepMedian<-median(fstepsPerDay$sumSteps)
+  meanDiff<-stepMean-fstepMean
+  cat("The mean steps per day changed by",meanDiff, "steps")
+  medianDiff<-fstepMedian-medianStepsPerDay
+  cat("The median steps per day changed by",medianDiff, "steps")
 ```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 Create a factor for weekday versus weekend
 ```{r weekday}
-fixedActs$dayType="weekday"
-days<-weekdays(strptime(fixedActs$date,format="%Y-%m-%d"))
-sats<-days=="Saturday"
-suns<-days=="Sunday"
-fixedActs$dayType[suns]<-"weekend"
-fixedActs$dayType[sats]<-"weekend"
-table(fixedActs$dayType)
+  fixedActs$dayType="weekday"
+  days<-weekdays(strptime(fixedActs$date,format="%Y-%m-%d"))
+  sats<-days=="Saturday"
+  suns<-days=="Sunday"
+  fixedActs$dayType[suns]<-"weekend"
+  fixedActs$dayType[sats]<-"weekend"
+  table(fixedActs$dayType)
 ```
 Summarize the data and plot it
 ```{r Weekday vs Weekend Activity Patterns}
-wf<-ddply(fixedActs,.(interval,dayType),summarize,meanSteps=mean(steps))
-d<-ggplot(wf,aes(x=interval,y=meanSteps),geom="line",facets=dayType)+facet_grid(dayType ~.)
-d+geom_line()
+  wf<-ddply(fixedActs,.(interval,dayType),summarize,meanSteps=mean(steps))
+  d<-ggplot(wf,aes(x=interval,y=meanSteps),geom="line",facets=dayType)+facet_grid(dayType ~.)
+  d+geom_line()
 ```
