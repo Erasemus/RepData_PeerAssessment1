@@ -30,23 +30,29 @@
 ##
 ## Summarize by Date
 ##
-#
-  stepsPerDay<-ddply(acts,"date",summarize,sumSteps=sum(steps,na.rm=TRUE))
+## Ignore NA values
+##
+  noNAacts<-acts[!is.na(acts),]
+  #stepsPerDay<-ddply(acts,"date",summarize,sumSteps=sum(steps,na.rm=TRUE))
+  stepsPerDay<-ddply(noNAacts,"date",summarize,sumSteps=sum(steps,na.rm=TRUE))
 ##
 ## Calculate the mean, ignoring the NA
 ##
-  stepMean<-mean(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)] )
+  #stepMean<-mean(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)] )
+  stepMean<-mean(stepsPerDay$sumSteps)
   cat("The mean total number of steps taken per day is", stepMean)
 ```
 
 ```
-## The mean total number of steps taken per day is 9354
+## The mean total number of steps taken per day is 10567
 ```
 
 
 ```r
 ## Plot the histogram oftotal  steps per day
-  ggplot(stepsPerDay, aes(  x=sumSteps)) + geom_histogram()
+  ggplot(stepsPerDay, aes(x=sumSteps)) + geom_histogram(colour="black",fill="white") +
+   geom_vline(data=stepsPerDay,aes(xintercept=mean(stepsPerDay$sumSteps, na.rm=T),show_guide = TRUE))+
+   geom_vline(data=stepsPerDay,aes(xintercept=median(stepsPerDay$sumSteps, na.rm=T), col="red",show_guide = TRUE))
 ```
 
 ```
@@ -58,13 +64,15 @@
 
 ```r
 ##Calculate and report the mean and median total number of steps taken per day
-  meanStepsPerDay<-mean(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
-  medianStepsPerDay<-median(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
+  #meanStepsPerDay<-mean(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
+  #medianStepsPerDay<-median(stepsPerDay$sumSteps[!is.na(stepsPerDay$sumSteps)])
+  meanStepsPerDay<-mean(stepsPerDay$sumSteps)
+  medianStepsPerDay<-median(stepsPerDay$sumSteps)
   cat("The mean total steps per day is",meanStepsPerDay, "and the median total steps per day is",medianStepsPerDay)
 ```
 
 ```
-## The mean total steps per day is 9354 and the median total steps per day is 10395
+## The mean total steps per day is 10567 and the median total steps per day is 10682
 ```
 ###Time series plot of steps per interval
 
@@ -72,8 +80,8 @@
 ##
 ##Get the complete cases for the summary with ddply and the plot
 ##
-  #facts<-acts[complete.cases(acts),]
-  sumIntervals<-ddply( acts,"interval",summarize,sumSteps=sum(steps,na.rm=TRUE))
+  facts<-acts[complete.cases(acts),]
+  sumIntervals<-ddply(facts,"interval",summarize,sumSteps=sum(steps,na.rm=TRUE))
   plot(sumIntervals,t="l")
 ```
 
@@ -84,7 +92,7 @@
 ##
 ##Find the interval with the the highest average number of steps
 ## 
-  meanIntervals<-ddply(acts,"interval",summarize,meanSteps=mean(steps,na.rm=TRUE))
+  meanIntervals<-ddply(facts,"interval",summarize,meanSteps=mean(steps,na.rm=TRUE))
   maxStepInterval<-meanIntervals$interval[which(meanIntervals$meanSteps==max(meanIntervals$meanSteps))]
   cat("The interval beginning at",maxStepInterval,"has the highest average number of steps." )
 ```
@@ -151,7 +159,7 @@ fstepsPerDay<-ddply(fixedActs,"date",summarize,sumSteps=sum(steps))
 ```
 
 ```
-## The mean steps per day changed by -1412 steps
+## The mean steps per day changed by -199.4 steps
 ```
 
 ```r
@@ -160,7 +168,7 @@ fstepsPerDay<-ddply(fixedActs,"date",summarize,sumSteps=sum(steps))
 ```
 
 ```
-## The median steps per day changed by 371.2 steps
+## The median steps per day changed by 83.69 steps
 ```
 
 
@@ -174,13 +182,6 @@ Create a factor for weekday versus weekend
   suns<-days=="Sunday"
   fixedActs$dayType[suns]<-"weekend"
   fixedActs$dayType[sats]<-"weekend"
-  table(fixedActs$dayType)
-```
-
-```
-## 
-## weekday weekend 
-##   12960    4608
 ```
 Summarize the data and plot it
 
